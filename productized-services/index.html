@@ -4,10 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Productized Services Redesign</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
+  /* Gilroy (commercial). Uses an installed copy if present, otherwise /fonts/*.woff2 from this repo. */
+  @font-face { font-family: "Gilroy"; font-weight: 400; font-style: normal; font-display: swap;
+    src: local("Gilroy Regular"), local("Gilroy-Regular"), url("../fonts/Gilroy-Regular.woff2") format("woff2"), url("../fonts/Gilroy-Regular.woff") format("woff"); }
+  @font-face { font-family: "Gilroy"; font-weight: 500; font-style: normal; font-display: swap;
+    src: local("Gilroy Medium"), local("Gilroy-Medium"), url("../fonts/Gilroy-Medium.woff2") format("woff2"), url("../fonts/Gilroy-Medium.woff") format("woff"); }
+  @font-face { font-family: "Gilroy"; font-weight: 600; font-style: normal; font-display: swap;
+    src: local("Gilroy SemiBold"), local("Gilroy-SemiBold"), url("../fonts/Gilroy-SemiBold.woff2") format("woff2"), url("../fonts/Gilroy-SemiBold.woff") format("woff"); }
+  @font-face { font-family: "Gilroy"; font-weight: 700; font-style: normal; font-display: swap;
+    src: local("Gilroy Bold"), local("Gilroy-Bold"), url("../fonts/Gilroy-Bold.woff2") format("woff2"), url("../fonts/Gilroy-Bold.woff") format("woff"); }
+  @font-face { font-family: "Gilroy"; font-weight: 800; font-style: normal; font-display: swap;
+    src: local("Gilroy ExtraBold"), local("Gilroy-ExtraBold"), url("../fonts/Gilroy-ExtraBold.woff2") format("woff2"), url("../fonts/Gilroy-ExtraBold.woff") format("woff"); }
   :root {
     --bg: #f7f9fa;
     --surface: #ffffff;
@@ -25,8 +33,8 @@
     --radius: 18px;
     --shadow: 0 1px 2px rgb(13 29 69 / .06), 0 10px 28px -10px rgb(13 29 69 / .16);
     --shadow-lg: 0 2px 4px rgb(13 29 69 / .06), 0 30px 60px -20px rgb(13 29 69 / .35);
-    --font: "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --font: "Gilroy", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    --mono: var(--font);
     /* card tones (match data-home-card-tone 0–3 on the live site) */
     --t0: #0074a8;
     --t1: #0ea5e9;
