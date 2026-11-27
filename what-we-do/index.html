@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What We Do Redesign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f9fa;
+    --surface: #ffffff;
+    --surface-2: #f3f6f9;
+    --ink: #0d1d45;
+    --ink-2: #3c4a6b;
+    --ink-3: #5d6984;
+    --line: #e2e8f0;
+    --line-2: #cfd8e3;
+    --accent: #0074a8;
+    --accent-ink: #ffffff;
+    --focus: #0074a8;
+    --radius: 16px;
+    --shadow: 0 1px 2px rgb(13 29 69 / .06), 0 8px 24px -8px rgb(13 29 69 / .12);
+    --shadow-lg: 0 2px 4px rgb(13 29 69 / .05), 0 24px 48px -16px rgb(13 29 69 / .18);
+    --font: "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    /* domain colours */
+    --build: #3b5bdb;
+    --protect: #0284c7;
+    --detect: #ea580c;
+    --test: #be123c;
+    --govern: #0f766e;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: var(--font); font-size: 16px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  button { font: inherit; color: inherit; }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 8px; }
+
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+  @media (min-width: 640px) { .wrap { padding: 0 24px; } }
+
+  /* ---------- Mock label ---------- */
+  .mockbar {
+    font-family: var(--mono); font-size: 12px; color: var(--ink-3);
+    text-align: center; padding: 10px 16px; border-bottom: 1px dashed var(--line-2);
+    background: var(--surface);
+  }
+
+  /* ---------- Section head ---------- */
+  .section { padding: 72px 0 88px; }
+  .shead { text-align: center; max-width: 720px; margin: 0 auto 36px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--mono); font-size: 12px; font-weight: 600;
+    letter-spacing: .18em; text-transform: uppercase; color: var(--accent);
+  }
+  .eyebrow::before { content: ""; width: 3px; height: 16px; background: var(--accent); border-radius: 2px; }
+  .shead h2 {
+    margin: 14px 0 12px; font-size: clamp(28px, 4.2vw, 42px); line-height: 1.12;
+    letter-spacing: -.02em; font-weight: 800; text-wrap: balance;
+  }
+  .shead p { margin: 0; color: var(--ink-3); font-size: 17px; text-wrap: pretty; }
+
+  .stats {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 0 auto 40px;
+    list-style: none; padding: 0;
+  }
+  .stats li {
+    display: inline-flex; align-items: baseline; gap: 6px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
+    padding: 6px 14px; font-size: 14px; color: var(--ink-3);
+  }
+  .stats b { color: var(--ink); font-size: 15px; font-variant-numeric: tabular-nums; }
+
+  /* ---------- Desktop: rail + panel ---------- */
+  .layout { display: none; }
+  @media (min-width: 960px) {
+    .layout {
+      display: grid; grid-template-columns: 340px 1fr; gap: 24px; align-items: start;
+    }
+    .accordion { display: none; }
+  }
+
+  .rail {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 10px; box-shadow: var(--shadow); position: sticky; top: 24px;
+  }
+  .group + .group { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--line); }
+  .glabel {
+    display: flex; align-items: center; gap: 8px; padding: 8px 10px 6px;
+    font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c); flex: none; }
+  .glabel .gname { color: var(--ink-2); letter-spacing: .02em; text-transform: none; font-family: var(--font); font-size: 12px; font-weight: 500; margin-left: auto; }
+
+  .tab {
+    --c: var(--accent);
+    position: relative; display: flex; align-items: center; gap: 12px; width: 100%;
+    padding: 10px 12px; border: 0; background: transparent; border-radius: 10px;
+    text-align: left; cursor: pointer; transition: background .15s ease;
+  }
+  .tab:hover { background: var(--surface-2); }
+  .tab[aria-selected="true"] { background: color-mix(in srgb, var(--c) 9%, white); }
+  .tab[aria-selected="true"]::before {
+    content: ""; position: absolute; left: -10px; top: 8px; bottom: 8px; width: 3px;
+    border-radius: 0 3px 3px 0; background: var(--c);
+  }
+  .tab .ico { width: 34px; height: 34px; }
+  .tab .tname { flex: 1; font-weight: 600; font-size: 15px; line-height: 1.25; }
+  .tab .count {
+    font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--ink-3);
+    min-width: 26px; height: 22px; padding: 0 7px; border-radius: 999px; display: inline-grid; place-items: center;
+    background: var(--surface-2); border: 1px solid var(--line);
+  }
+  .tab[aria-selected="true"] .count { color: var(--c); border-color: color-mix(in srgb, var(--c) 30%, white); background: white; }
+
+  .ico {
+    flex: none; display: grid; place-items: center; border-radius: 10px;
+    color: var(--c); background: color-mix(in srgb, var(--c) 10%, white);
+    border: 1px solid color-mix(in srgb, var(--c) 22%, white);
+  }
+  .ico svg { width: 18px; height: 18px; }
+
+  .star { color: #ea580c; width: 14px; height: 14px; flex: none; }
+
+  /* ---------- Panel ---------- */
+  .panel {
+    --c: var(--accent);
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow-lg); overflow: hidden; position: relative;
+  }
+  .panel::before {
+    content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--c);
+  }
+  .phead {
+    padding: 28px 32px 24px;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--c) 7%, white), white 85%);
+    border-bottom: 1px solid var(--line);
+  }
+  .ptop { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+  .dchip {
+    display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px 4px 8px; border-radius: 999px;
+    background: white; border: 1px solid color-mix(in srgb, var(--c) 30%, white);
+    font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--c);
+  }
+  .dchip span { color: var(--ink-3); letter-spacing: .02em; text-transform: none; font-family: var(--font); font-size: 12px; font-weight: 500; }
+  .flag {
+    display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
+    background: #fff4ec; color: #b4440a; border: 1px solid #fed7bf; font-size: 12px; font-weight: 700;
+  }
+  .pnav { margin-left: auto; display: flex; gap: 6px; }
+  .iconbtn {
+    width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; cursor: pointer;
+    border: 1px solid var(--line); background: white; color: var(--ink-2); transition: border-color .15s, color .15s;
+  }
+  .iconbtn:hover { border-color: var(--line-2); color: var(--ink); }
+  .iconbtn svg { width: 16px; height: 16px; }
+
+  .ptitle { display: flex; align-items: center; gap: 16px; }
+  .ptitle .ico { width: 52px; height: 52px; border-radius: 14px; }
+  .ptitle .ico svg { width: 24px; height: 24px; }
+  .ptitle h3 { margin: 0; font-size: clamp(22px, 2.4vw, 28px); line-height: 1.15; letter-spacing: -.015em; font-weight: 800; }
+  .ptitle p { margin: 4px 0 0; color: var(--ink-3); font-size: 15px; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; padding: 0; list-style: none; }
+  .chips li {
+    font-size: 13px; font-weight: 500; color: var(--ink-2); padding: 4px 10px; border-radius: 8px;
+    background: white; border: 1px solid var(--line);
+  }
+
+  .pbody { padding: 24px 32px 8px; }
+  .subhead {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 14px;
+    font-size: 14px; font-weight: 700; color: var(--ink);
+  }
+  .subhead small { font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--ink-3); }
+
+  .controls { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; grid-template-columns: 1fr; }
+  @media (min-width: 1100px) { .controls.two { grid-template-columns: 1fr 1fr; } }
+  .control {
+    display: flex; gap: 12px; padding: 14px 16px; border-radius: 12px;
+    background: var(--surface-2); border: 1px solid var(--line);
+    transition: border-color .15s, background .15s;
+  }
+  .control:hover { border-color: color-mix(in srgb, var(--c) 35%, white); background: white; }
+  .cnum {
+    flex: none; width: 24px; height: 24px; border-radius: 7px; display: grid; place-items: center;
+    font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--c);
+    background: white; border: 1px solid color-mix(in srgb, var(--c) 25%, white);
+  }
+  .control h4 { margin: 1px 0 3px; font-size: 15px; font-weight: 700; line-height: 1.3; }
+  .control p { margin: 0; font-size: 14px; color: var(--ink-3); line-height: 1.5; }
+  .bul { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 7px; }
+  .bul li { display: flex; gap: 9px; font-size: 14px; color: var(--ink-2); line-height: 1.45; }
+  .bul svg { flex: none; width: 16px; height: 16px; margin-top: 2px; color: var(--c); }
+  @media (min-width: 1100px) { .bul.cols { grid-template-columns: 1fr 1fr; column-gap: 20px; } }
+
+  .maps { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 20px 0 0; }
+  .maps > span { font-size: 13px; font-weight: 600; color: var(--ink-3); margin-right: 2px; }
+  .std {
+    font-family: var(--mono); font-size: 11.5px; font-weight: 600; padding: 3px 8px; border-radius: 6px;
+    color: var(--ink-2); background: white; border: 1px dashed var(--line-2);
+  }
+
+  .pfoot {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+    padding: 20px 32px 28px; margin-top: 16px;
+  }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px;
+    padding: 0 18px; border-radius: 10px; font-weight: 700; font-size: 15px; text-decoration: none; cursor: pointer;
+    border: 1px solid transparent; transition: transform .15s, box-shadow .15s, background .15s;
+  }
+  .btn svg { width: 16px; height: 16px; }
+  .btn.primary { background: var(--ink); color: white; box-shadow: 0 6px 16px -6px rgb(13 29 69 / .5); }
+  .btn.primary:hover { background: #172a5e; transform: translateY(-1px); }
+  .btn.ghost { background: white; color: var(--ink); border-color: var(--line-2); }
+  .btn.ghost:hover { border-color: var(--ink-3); }
+  .link {
+    margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 15px;
+    color: var(--accent); text-decoration: none; padding: 8px 4px;
+  }
+  .link:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .link svg { width: 16px; height: 16px; transition: transform .15s; }
+  .link:hover svg { transform: translateX(3px); }
+
+  .fade { animation: fade .28s ease both; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- Mobile accordion ---------- */
+  @media (max-width: 959.98px) { .accordion { display: grid; gap: 22px; } }
+  .agroup .glabel { padding: 0 4px 8px; }
+  .alist { display: grid; gap: 8px; }
+  .aitem {
+    --c: var(--accent);
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
+    box-shadow: 0 1px 2px rgb(13 29 69 / .05);
+  }
+  .aitem.open { border-color: color-mix(in srgb, var(--c) 40%, white); box-shadow: var(--shadow); }
+  .abtn {
+    display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; padding: 12px 14px;
+    border: 0; background: transparent; text-align: left; cursor: pointer;
+  }
+  .abtn .ico { width: 38px; height: 38px; }
+  .abtn .tname { flex: 1; font-weight: 700; font-size: 16px; line-height: 1.25; }
+  .abtn .tname small { display: block; font-weight: 500; font-size: 13px; color: var(--ink-3); margin-top: 2px; }
+  .chev { width: 20px; height: 20px; color: var(--ink-3); transition: transform .2s; flex: none; }
+  .aitem.open .chev { transform: rotate(180deg); }
+  .apanel { border-top: 1px solid var(--line); }
+  .apanel .pbody { padding: 16px 14px 4px; }
+  .apanel .chips { margin: 0 0 16px; }
+  .apanel .pfoot { padding: 16px 14px 18px; margin: 0; }
+  .apanel .pfoot .btn { flex: 1 1 100%; }
+  .apanel .link { margin: 0 auto; }
+
+  /* ---------- Toast ---------- */
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0;
+    background: var(--ink); color: white; padding: 12px 16px; border-radius: 12px; font-size: 14px;
+    box-shadow: var(--shadow-lg); transition: opacity .2s, transform .2s; pointer-events: none;
+    max-width: calc(100vw - 32px); z-index: 10;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .toast code { font-family: var(--mono); font-size: 12.5px; background: rgb(255 255 255 / .12); padding: 1px 5px; border-radius: 4px; }
+
+  /* ---------- Design notes ---------- */
+  .notes {
+    border-top: 1px dashed var(--line-2); background: var(--surface); padding: 48px 0 64px;
+  }
+  .notes h2 { font-size: 20px; margin: 0 0 4px; }
+  .notes > .wrap > p { margin: 0 0 24px; color: var(--ink-3); }
+  .ngrid { display: grid; gap: 12px; grid-template-columns: 1fr; list-style: none; padding: 0; margin: 0; counter-reset: n; }
+  @media (min-width: 720px) { .ngrid { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1080px) { .ngrid { grid-template-columns: 1fr 1fr 1fr; } }
+  .ngrid li {
+    counter-increment: n; padding: 16px 16px 16px 52px; position: relative;
+    border: 1px solid var(--line); border-radius: 12px; background: var(--bg); font-size: 14px; color: var(--ink-2);
+  }
+  .ngrid li::before {
+    content: counter(n); position: absolute; left: 16px; top: 15px; width: 24px; height: 24px; border-radius: 50%;
+    display: grid; place-items: center; background: var(--ink); color: white; font-family: var(--mono); font-size: 11px; font-weight: 600;
+  }
+  .ngrid b { display: block; color: var(--ink); font-size: 15px; margin-bottom: 2px; }
+  .warn { border-color: #fed7bf !important; background: #fffaf6 !important; }
+  .warn::before { background: #c2410c !important; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="mockbar">Mockup · CyberStation “What we do” section redesign · all copy taken from the live page</div>
+
+<section class="section" id="platform" aria-labelledby="wwd-title">
+  <div class="wrap">
+    <header class="shead">
+      <span class="eyebrow">What we do</span>
+      <h2 id="wwd-title">9 integrated security practices.</h2>
+      <p>End-to-end coverage from secure code to a managed SOC — one accountable partner, mapped to the standards you answer to.</p>
+    </header>
+
+    <ul class="stats" aria-label="Coverage at a glance">
+      <li><b>5</b> domains</li>
+      <li><b>9</b> practices</li>
+      <li><b id="stat-controls">27</b> controls</li>
+    </ul>
+
+    <!-- Desktop -->
+    <div class="layout">
+      <nav class="rail" aria-label="Security practices">
+        <div id="tablist" role="tablist" aria-orientation="vertical" aria-label="Security practices by domain"></div>
+      </nav>
+      <div id="panel" class="panel" role="tabpanel" tabindex="0"></div>
+    </div>
+
+    <!-- Mobile / tablet -->
+    <div id="accordion" class="accordion"></div>
+  </div>
+</section>
+
+<section class="notes" aria-labelledby="notes-title">
+  <div class="wrap">
+    <h2 id="notes-title">Design notes</h2>
+    <p>What changed compared with the live 3×3 grid, and why. No content was removed.</p>
+    <ol class="ngrid">
+      <li><b>Grouped by the site’s 5 domains</b>Build · Protect · Detect · Test · Govern. These match the “Service architecture” section above, so visitors see one structure across the page.</li>
+      <li><b>List and details side by side</b>Choosing a practice swaps the details panel. The page no longer jumps, and switching between practices takes one click.</li>
+      <li><b>Flagship opens first</b>Managed Detection &amp; Response is selected on load and marked “Flagship”. Before, it only had an orange border with no explanation.</li>
+      <li><b>Colour means domain</b>Each domain has one colour, used on its rail marker, icon and panel. Before, border colours cycled by column.</li>
+      <li><b>Numbered badges removed</b>The 01–09 badges suggested an order that doesn’t exist. The domain label and the count of controls do that job now.</li>
+      <li><b>Keywords shown as chips</b>The comma-separated lists are now tags. Same words, faster to scan, and they still help SEO.</li>
+      <li><b>Steps shown as bullets</b>The single MDR and GRC controls held 5 steps each in one block of text. They now show as checklists, so the flagship no longer looks thin.</li>
+      <li><b>Standards made visible</b>The subtitle promises mapping to standards. “Maps to” tags are taken from the practice’s own copy (CIS, ISO 27001, SOC 2, OWASP, MASVS…).</li>
+      <li><b>Every practice has a next step</b>Each one gets “Add to estimate” (to the calculator, pre-filled from <code>data-service-id</code>), “Talk to an expert” (opens the existing demo popup) and “Explore practice”.</li>
+      <li><b>Accessible tabs</b>Real <code>button</code> elements with <code>role="tab"</code>, the panel linked by <code>aria-controls</code>, and arrow, Home and End keys. Below 960px the section becomes an accordion that uses <code>aria-expanded</code>.</li>
+      <li><b>Phone layout</b>Each practice is a 64px row, grouped by domain, with one open at a time. The live layout stacks about 2,000px of cards.</li>
+      <li><b>Copy cleaned up</b>Labels now use sentence case (“SOC-AS-A-SERVICE” becomes “SOC-as-a-Service”), and the plural reads correctly (“1 control”, not “1 controls”).</li>
+      <li class="warn"><b>Content gaps on the live site</b>“Awareness training” says <em>“Describe this feature.”</em> (placeholder copy is live), and three controls just repeat their own name as the description. The mockup hides those until real copy exists.</li>
+      <li class="warn"><b>Cards mention services that aren’t listed</b>GRC mentions ISO, PCI and vCISO, but the only control is SOC 2. Network mentions Firewall, IDS/IPS and Zero Trust. Data mentions DSPM and UEBA. Intel mentions DFIR. Add those controls or trim the keywords.</li>
+    </ol>
+  </div>
+</section>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const ICONS = {
+    code: '<path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/>',
+    shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',
+    target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+    network: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/>',
+    pulse: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+    users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+    clipboard: '<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/>',
+    eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+    db: '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/>',
+    check: '<path d="M20 6 9 17l-5-5"/>',
+    chev: '<path d="m6 9 6 6 6-6"/>',
+    arrow: '<path d="M5 12h14M13 5l7 7-7 7"/>',
+    left: '<path d="m15 18-6-6 6-6"/>',
+    right: '<path d="m9 18 6-6-6-6"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    chat: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'
+  };
+  const svg = (n, cls = '') =>
+    `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]}</svg>`;
+  const STAR = '<svg class="star" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>';
+
+  // Domain taglines are the live site's own copy from the "Service architecture" section.
+  const DOMAINS = [
+    { id: 'build',   key: 'Build',   name: 'Build & Ship Secure', tagline: 'Secure the pipeline, from first commit to cloud.' },
+    { id: 'protect', key: 'Protect', name: 'Protect the Estate',  tagline: 'Harden endpoints, identity, network and data.' },
+    { id: 'detect',  key: 'Detect',  name: 'Detect & Respond',    tagline: '24×7 monitoring, threat intelligence and incident response.' },
+    { id: 'test',    key: 'Test',    name: 'Test & Validate',     tagline: 'Prove your defences with real-world offensive testing.' },
+    { id: 'govern',  key: 'Govern',  name: 'Govern & Train',      tagline: 'Compliance readiness, advisory and human risk.' }
+  ];
+
+  // Content extracted from the live #platform section (names normalised to sentence case).
+  const PRACTICES = [
+    { id: 'c2c', domain: 'build', icon: 'code', name: 'Code-to-Cloud Security', tags: 'DevSecOps, cloud, CI/CD, container, IaC', controls: [
+      ['DevSecOps maturity assessment & gap analysis', 'We assess your DevSecOps maturity across the SDLC and deliver a prioritized roadmap to shift security left — from code to deployment.'],
+      ['Cloud security architecture (AWS / Azure / GCP)', 'Architect your cloud to be secure from the ground up — expert design and review of identity, network, and data controls across AWS, Azure & GCP.'],
+      ['CI/CD pipeline security (SAST, DAST, SCA)', 'Embed SAST, DAST & SCA directly into your CI/CD pipeline — catching vulnerabilities in code, dependencies, and running apps before they ship.'],
+      ['IaC security & cloud hardening (Terraform, Ansible)', 'Harden your infrastructure as code — Terraform & Ansible scanned against CIS benchmarks so misconfigurations never ship.'],
+      ['Container & Kubernetes security (Docker, Helm)', 'Secure your containers end to end — we scan Docker images and Helm charts and harden Kubernetes against misconfiguration, so workloads run safely from build to runtime.'],
+      ['Cloud Security Posture Management (CSPM) & compliance', 'Continuous visibility across your cloud — CSPM that detects misconfigurations and drift in real time and keeps you aligned to CIS, ISO 27001 & SOC 2.']
+    ]},
+    { id: 'eid', domain: 'protect', icon: 'shield', name: 'Endpoint & Identity Defense', tags: 'Windows / Linux, AD, GPO, endpoint, Exchange', controls: [
+      ['Server hardening', 'Server baseline, patch posture and critical service review.'],
+      ['OS & endpoint hardening', 'Workstation baseline, local admin and LAPS controls.'],
+      ['Active Directory security assessment', 'Active Directory security assessment'],
+      ['Exchange security assessment', 'Exchange Security Assessment']
+    ]},
+    { id: 'net', domain: 'protect', icon: 'network', name: 'Network Defense', tags: 'Firewall, IDS/IPS, segmentation, Zero Trust', controls: [
+      ['Network architecture assessment & segmentation design', 'Zone model, VLANs, east-west traffic and blast-radius controls.'],
+      ['DDoS readiness review', 'Runbooks, DNS/CDN routing and response readiness.']
+    ]},
+    { id: 'data', domain: 'protect', icon: 'db', name: 'Data Security & Privacy', tags: 'Netwrix, DLP, DSPM, classification, UEBA', controls: [
+      ['Netwrix data discovery implementation', 'Discovery deployment and sensitive-data control baseline.'],
+      ['DLP policy design', 'Policy design for exfiltration and misuse controls.']
+    ]},
+    { id: 'mdr', domain: 'detect', icon: 'pulse', flagship: true, name: 'Managed Detection & Response', tags: '24×7 Wazuh SOC, triage, IR, reporting', controls: [
+      ['SOC-as-a-Service (SOCaaS)', '24×7 monitoring, detection & response on managed Wazuh stack\nDedicated analyst team & defined escalation paths\nContinuous detection-rule tuning & threat intel updates\nMonthly executive & technical reporting\nPredictable per-endpoint pricing — onboarding in days']
+    ]},
+    { id: 'intel', domain: 'detect', icon: 'eye', name: 'Intelligence & Investigation', tags: 'Dark web, leaked credentials, DFIR', controls: [
+      ['Dark-web domain monitoring', 'Credential, domain and threat actor monitoring.'],
+      ['Leaked credential alerting', 'Monitoring for employee and domain credential exposure.']
+    ]},
+    { id: 'off', domain: 'test', icon: 'target', name: 'Offensive Security', tags: 'Pentest, red team, social engineering, code review', controls: [
+      ['Web/API penetration test', 'OWASP Top 10/API security testing with manual validation.'],
+      ['Mobile application pentest', 'Android/iOS MASVS-aligned mobile security testing.'],
+      ['Internal / Active Directory pentest', 'Lateral movement, privilege escalation and internal exposure.'],
+      ['Secure source code review', 'Manual review for critical flows and insecure patterns.'],
+      ['Red team exercise', 'Objective-led attack simulation and executive debrief.'],
+      ['Social engineering simulation', 'Phishing, vishing and physical scenario testing.'],
+      ['Remediation retest', 'Validation after remediation; included in packaged pentests.']
+    ]},
+    { id: 'grc', domain: 'govern', icon: 'clipboard', name: 'GRC & Advisory', tags: 'ISO, SOC 2, PCI, regional readiness, vCISO', controls: [
+      ['SOC 2 Type 2 certification consultancy', 'Readiness assessment & control-gap analysis\nTrust Services Criteria control design & implementation\nPolicy, procedure & evidence-collection framework\nAudit-period monitoring & auditor coordination\nFinal SOC 2 Type 2 report & remediation guidance']
+    ]},
+    { id: 'hrm', domain: 'govern', icon: 'users', name: 'Human Risk Management', tags: 'Phishing simulation, training, culture', controls: [
+      ['Phishing simulation', 'Phishing Simulation'],
+      ['Awareness training', 'Describe this feature.']
+    ]}
+  ];
+
+  const PLACEHOLDER = /^describe this feature\.?$/i;
+  const STANDARDS = [
+    ['ISO 27001', /ISO( 27001)?\b/],
+    ['SOC 2', /SOC 2/],
+    ['PCI DSS', /\bPCI\b/],
+    ['CIS Benchmarks', /\bCIS\b/],
+    ['OWASP', /OWASP/],
+    ['OWASP MASVS', /MASVS/],
+    ['MITRE ATT&CK', /ATT&CK/]
+  ];
+
+  const esc = s => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+  const domainOf = p => DOMAINS.find(d => d.id === p.domain);
+  const color = p => `var(--${p.domain})`;
+  const ordered = DOMAINS.flatMap(d => PRACTICES.filter(p => p.domain === d.id));
+
+  document.getElementById('stat-controls').textContent = PRACTICES.reduce((n, p) => n + p.controls.length, 0);
+
+  function standardsFor(p) {
+    const text = p.tags + ' ' + p.controls.map(c => c.join(' ')).join(' ');
+    return STANDARDS.filter(([, re]) => re.test(text)).map(([label]) => label)
+      .filter((l, _, all) => !(l === 'OWASP' && all.includes('OWASP MASVS') && !/OWASP Top/.test(text)));
+  }
+
+  function controlHTML(p, [name, desc], i) {
+    const lines = desc.split('\n').map(s => s.trim()).filter(Boolean);
+    const redundant = lines.length === 1 && (lines[0].toLowerCase() === name.toLowerCase() || PLACEHOLDER.test(lines[0]));
+    let body = '';
+    if (lines.length > 1) {
+      body = `<ul class="bul${p.controls.length === 1 ? ' cols' : ''}">${lines.map(l => `<li>${svg('check')}<span>${esc(l)}</span></li>`).join('')}</ul>`;
+    } else if (!redundant) {
+      body = `<p>${esc(lines[0])}</p>`;
+    }
+    return `<li class="control"><span class="cnum">${String(i + 1).padStart(2, '0')}</span><div><h4>${esc(name)}</h4>${body}</div></li>`;
+  }
+
+  function bodyHTML(p, { compact = false } = {}) {
+    const d = domainOf(p);
+    const stds = standardsFor(p);
+    const chips = p.tags.split(',').map(t => `<li>${esc(t.trim())}</li>`).join('');
+    const twoCol = p.controls.length > 2;
+    return `
+      ${compact ? `<div class="pbody"><ul class="chips" aria-label="Covers">${chips}</ul>` : `<div class="pbody">`}
+        <h4 class="subhead">${plural(p.controls.length, 'control')} in this practice <small>${esc(d.key)} domain</small></h4>
+        <ul class="controls${twoCol ? ' two' : ''}">${p.controls.map((c, i) => controlHTML(p, c, i)).join('')}</ul>
+        ${stds.length ? `<div class="maps"><span>Maps to</span>${stds.map(s => `<span class="std">${esc(s)}</span>`).join('')}</div>` : ''}
+      </div>
+      <div class="pfoot">
+        <a class="btn primary" href="#estimate?service=${p.id}" data-action="estimate" data-id="${p.id}">${svg('plus')}Add to estimate</a>
+        <button type="button" class="btn ghost" data-action="expert" data-id="${p.id}">${svg('chat')}Talk to an expert</button>
+        <a class="link" href="#practice-${p.id}" data-action="explore" data-id="${p.id}">Explore practice ${svg('arrow')}</a>
+      </div>`;
+  }
+
+  /* ---------------- Desktop tabs ---------------- */
+  const tablist = document.getElementById('tablist');
+  const panel = document.getElementById('panel');
+  let current = 'mdr';
+
+  tablist.innerHTML = DOMAINS.map(d => {
+    const items = PRACTICES.filter(p => p.domain === d.id);
+    return `<div class="group" role="presentation" style="--c:var(--${d.id})">
+      <div class="glabel" role="presentation"><span class="dot"></span>${d.key}<span class="gname">${plural(items.length, 'practice')}</span></div>
+      ${items.map(p => `
+        <button type="button" class="tab" role="tab" id="tab-${p.id}" data-id="${p.id}" aria-controls="panel" aria-selected="false" tabindex="-1" style="--c:${color(p)}">
+          <span class="ico">${svg(p.icon)}</span>
+          <span class="tname">${esc(p.name)}</span>
+          ${p.flagship ? STAR + '<span class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Flagship</span>' : ''}
+          <span class="count" aria-label="${plural(p.controls.length, 'control')}">${p.controls.length}</span>
+        </button>`).join('')}
+    </div>`;
+  }).join('');
+
+  const tabs = [...tablist.querySelectorAll('[role=tab]')];
+
+  function renderPanel(id, focusTab = false) {
+    current = id;
+    const p = PRACTICES.find(x => x.id === id);
+    const d = domainOf(p);
+    const idx = ordered.indexOf(p);
+    const prev = ordered[(idx - 1 + ordered.length) % ordered.length];
+    const next = ordered[(idx + 1) % ordered.length];
+
+    tabs.forEach(t => {
+      const on = t.dataset.id === id;
+      t.setAttribute('aria-selected', on);
+      t.tabIndex = on ? 0 : -1;
+      if (on && focusTab) t.focus();
+    });
+
+    panel.style.setProperty('--c', color(p));
+    panel.setAttribute('aria-labelledby', `tab-${id}`);
+    panel.innerHTML = `<div class="fade">
+      <div class="phead">
+        <div class="ptop">
+          <span class="dchip" style="--c:${color(p)}"><span class="dot"></span>${d.key}<span>· ${esc(d.name)}</span></span>
+          ${p.flagship ? `<span class="flag">${STAR}Flagship · 24×7 SOC</span>` : ''}
+          <div class="pnav">
+            <button type="button" class="iconbtn" data-go="${prev.id}" aria-label="Previous practice: ${esc(prev.name)}">${svg('left')}</button>
+            <button type="button" class="iconbtn" data-go="${next.id}" aria-label="Next practice: ${esc(next.name)}">${svg('right')}</button>
+          </div>
+        </div>
+        <div class="ptitle">
+          <span class="ico" style="--c:${color(p)}">${svg(p.icon)}</span>
+          <div><h3>${esc(p.name)}</h3><p>${esc(d.tagline)}</p></div>
+        </div>
+        <ul class="chips" aria-label="Covers">${p.tags.split(',').map(t => `<li>${esc(t.trim())}</li>`).join('')}</ul>
+      </div>
+      ${bodyHTML(p)}
+    </div>`;
+  }
+
+  tablist.addEventListener('click', e => {
+    const t = e.target.closest('[role=tab]');
+    if (t) renderPanel(t.dataset.id);
+  });
+  tablist.addEventListener('keydown', e => {
+    const i = tabs.findIndex(t => t.dataset.id === current);
+    const map = { ArrowDown: i + 1, ArrowRight: i + 1, ArrowUp: i - 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 };
+    if (!(e.key in map)) return;
+    e.preventDefault();
+    const n = (map[e.key] + tabs.length) % tabs.length;
+    renderPanel(tabs[n].dataset.id, true);
+  });
+  panel.addEventListener('click', e => {
+    const b = e.target.closest('[data-go]');
+    if (b) { renderPanel(b.dataset.go); panel.querySelector(`[data-go]`)?.focus(); }
+  });
+
+  /* ---------------- Mobile accordion ---------------- */
+  const acc = document.getElementById('accordion');
+  acc.innerHTML = DOMAINS.map(d => {
+    const items = PRACTICES.filter(p => p.domain === d.id);
+    return `<div class="agroup" style="--c:var(--${d.id})">
+      <div class="glabel"><span class="dot"></span>${d.key}<span class="gname">${esc(d.name)}</span></div>
+      <div class="alist">
+        ${items.map(p => `
+          <div class="aitem" data-id="${p.id}" style="--c:${color(p)}">
+            <h3 style="margin:0">
+              <button type="button" class="abtn" aria-expanded="false" aria-controls="acc-${p.id}" id="accbtn-${p.id}">
+                <span class="ico">${svg(p.icon)}</span>
+                <span class="tname">${esc(p.name)}${p.flagship ? ` <span class="flag" style="margin-left:4px;padding:1px 8px;font-size:11px">${STAR}Flagship</span>` : ''}<small>${plural(p.controls.length, 'control')} · ${esc(p.tags)}</small></span>
+                ${svg('chev', 'chev')}
+              </button>
+            </h3>
+            <div class="apanel" id="acc-${p.id}" role="region" aria-labelledby="accbtn-${p.id}" hidden>${bodyHTML(p, { compact: true })}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
+  function setAcc(id, open) {
+    acc.querySelectorAll('.aitem').forEach(item => {
+      const on = open && item.dataset.id === id;
+      item.classList.toggle('open', on);
+      item.querySelector('.abtn').setAttribute('aria-expanded', on);
+      item.querySelector('.apanel').hidden = !on;
+    });
+  }
+  acc.addEventListener('click', e => {
+    const b = e.target.closest('.abtn');
+    if (!b) return;
+    const item = b.closest('.aitem');
+    const wasOpen = item.classList.contains('open');
+    setAcc(item.dataset.id, !wasOpen);
+    if (!wasOpen) requestAnimationFrame(() => {
+      const r = item.getBoundingClientRect();
+      if (r.top < 0 || r.top > innerHeight * .6) item.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    });
+  });
+
+  /* ---------------- CTA demo behaviour ---------------- */
+  const toast = document.getElementById('toast');
+  let tt;
+  function say(html) {
+    toast.innerHTML = html; toast.classList.add('show');
+    clearTimeout(tt); tt = setTimeout(() => toast.classList.remove('show'), 2600);
+  }
+  document.addEventListener('click', e => {
+    const a = e.target.closest('[data-action]');
+    if (!a) return;
+    e.preventDefault();
+    const p = PRACTICES.find(x => x.id === a.dataset.id);
+    if (a.dataset.action === 'estimate') say(`Opens the pricing calculator with <code>service=${p.id}</code> preselected`);
+    if (a.dataset.action === 'expert') say(`Opens the existing <code>#orgDemoModal</code> with “${esc(p.name)}” as context`);
+    if (a.dataset.action === 'explore') say(`Goes to the ${esc(p.name)} practice page`);
+  });
+
+  renderPanel(current);
+  setAcc('mdr', true);
+})();
+</script>
+</body>
+</html>
