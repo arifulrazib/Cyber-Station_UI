@@ -6,3 +6,4 @@ UI/UX redesign explorations for the CyberStation website.
 |---|---|---|
 | What we do | [`what-we-do/index.html`](what-we-do/index.html) | Mockup |
 | Productized services | [`productized-services/index.html`](productized-services/index.html) | Mockup |
+| Homepage (motion build) | [`site/`](site/) — Next.js app | In progress |

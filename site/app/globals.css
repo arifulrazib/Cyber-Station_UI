@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+/* Gilroy (commercial, not committed). Uses an installed copy if present, otherwise
+   /public/fonts/Gilroy-*.woff2 — see public/fonts/README.md. */
+@font-face { font-family: "Gilroy"; font-weight: 400; font-style: normal; font-display: swap;
+  src: local("Gilroy Regular"), local("Gilroy-Regular"), url("/fonts/Gilroy-Regular.woff2") format("woff2"); }
+@font-face { font-family: "Gilroy"; font-weight: 500; font-style: normal; font-display: swap;
+  src: local("Gilroy Medium"), local("Gilroy-Medium"), url("/fonts/Gilroy-Medium.woff2") format("woff2"); }
+@font-face { font-family: "Gilroy"; font-weight: 600; font-style: normal; font-display: swap;
+  src: local("Gilroy SemiBold"), local("Gilroy-SemiBold"), url("/fonts/Gilroy-SemiBold.woff2") format("woff2"); }
+@font-face { font-family: "Gilroy"; font-weight: 700; font-style: normal; font-display: swap;
+  src: local("Gilroy Bold"), local("Gilroy-Bold"), url("/fonts/Gilroy-Bold.woff2") format("woff2"); }
+@font-face { font-family: "Gilroy"; font-weight: 800; font-style: normal; font-display: swap;
+  src: local("Gilroy ExtraBold"), local("Gilroy-ExtraBold"), url("/fonts/Gilroy-ExtraBold.woff2") format("woff2"); }
+
+@theme {
+  --font-sans: "Gilroy", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+
+  --color-void: #04070f;
+  --color-abyss: #070d1c;
+  --color-deep: #0b1530;
+  --color-panel: #0e1a38;
+  --color-line: #1b2a4d;
+  --color-mist: #8fa1c7;
+  --color-fog: #c3cfe8;
+  --color-signal: #38bdf8;
+  --color-pulse: #34d399;
+  --color-alert: #fbbf24;
+  --color-threat: #fb7185;
+
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html { background: var(--color-void); color-scheme: dark; }
+  html.lenis, html.lenis body { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+  body {
+    background: var(--color-void);
+    color: #ffffff;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection { background: var(--color-signal); color: var(--color-void); }
+  :focus-visible { outline: 2px solid var(--color-signal); outline-offset: 3px; border-radius: 6px; }
+}
+
+@layer components {
+  .eyebrow {
+    @apply inline-flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.22em] text-signal;
+  }
+  .eyebrow::before {
+    content: "";
+    @apply h-1.5 w-1.5 rounded-full bg-signal shadow-[0_0_12px_2px_var(--color-signal)];
+  }
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, rgb(56 189 248 / 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(56 189 248 / 0.06) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  }
+  .glass {
+    @apply border border-white/10 bg-white/[0.03] backdrop-blur-md;
+  }
+}
+
+@utility marquee {
+  animation: marquee var(--marquee-duration, 40s) linear infinite;
+}
+@utility marquee-reverse {
+  animation: marquee var(--marquee-duration, 40s) linear infinite reverse;
+}
+@keyframes marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+@keyframes scan {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes blink {
+  50% { opacity: 0.25; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
