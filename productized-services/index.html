@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Productized Services Redesign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f9fa;
+    --surface: #ffffff;
+    --surface-2: #f3f6f9;
+    --ink: #0d1d45;
+    --ink-2: #3c4a6b;
+    --ink-3: #5d6984;
+    --line: #e2e8f0;
+    --line-2: #cfd8e3;
+    --accent: #0074a8;
+    --navy-1: #0b1a40;
+    --navy-2: #0f2a5c;
+    --amber: #fbbf24;
+    --green: #34d399;
+    --radius: 18px;
+    --shadow: 0 1px 2px rgb(13 29 69 / .06), 0 10px 28px -10px rgb(13 29 69 / .16);
+    --shadow-lg: 0 2px 4px rgb(13 29 69 / .06), 0 30px 60px -20px rgb(13 29 69 / .35);
+    --font: "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    /* card tones (match data-home-card-tone 0–3 on the live site) */
+    --t0: #0074a8;
+    --t1: #0ea5e9;
+    --t2: #0f766e;
+    --t3: #3b4fd8;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: var(--font); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased;
+  }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 8px; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+  @media (min-width: 640px) { .wrap { padding: 0 24px; } }
+
+  /* ---------- Mockup toolbar (not part of the design) ---------- */
+  .mockbar {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 16px;
+    font-family: var(--mono); font-size: 12px; color: var(--ink-3);
+    padding: 10px 16px; border-bottom: 1px dashed var(--line-2); background: var(--surface);
+  }
+  .switch { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+  .switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .track {
+    width: 34px; height: 20px; border-radius: 999px; background: var(--line-2); position: relative; transition: background .15s;
+  }
+  .track::after {
+    content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%;
+    background: white; box-shadow: 0 1px 2px rgb(0 0 0 / .2); transition: transform .15s;
+  }
+  .switch input:checked + .track { background: var(--accent); }
+  .switch input:checked + .track::after { transform: translateX(14px); }
+  .switch input:focus-visible + .track { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* Live site hides these when pricing is off */
+  body.pricing-off [data-pricing-hidden] { display: none !important; }
+
+  /* ---------- Section head ---------- */
+  .section { padding: 72px 0 88px; }
+  .shead { text-align: center; max-width: 720px; margin: 0 auto 44px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--mono); font-size: 12px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--accent);
+  }
+  .eyebrow::before { content: ""; width: 3px; height: 16px; background: var(--accent); border-radius: 2px; }
+  .shead h2 {
+    margin: 14px 0 12px; font-size: clamp(28px, 4.2vw, 42px); line-height: 1.12; letter-spacing: -.02em; font-weight: 800; text-wrap: balance;
+  }
+  .shead p { margin: 0; color: var(--ink-3); font-size: 17px; text-wrap: pretty; }
+
+  /* ---------- Featured programme ---------- */
+  .feat {
+    position: relative; overflow: hidden; color: #e8eefc;
+    background:
+      radial-gradient(900px 400px at 100% 0%, rgb(14 165 233 / .22), transparent 60%),
+      radial-gradient(600px 300px at 0% 100%, rgb(59 79 216 / .25), transparent 60%),
+      linear-gradient(135deg, var(--navy-1), var(--navy-2));
+    border-radius: 22px; box-shadow: var(--shadow-lg);
+    display: grid; gap: 28px; padding: 28px 20px;
+  }
+  @media (min-width: 640px) { .feat { padding: 36px; } }
+  @media (min-width: 1024px) { .feat { grid-template-columns: 1.05fr 1fr; gap: 40px; padding: 44px; align-items: stretch; } }
+  .feat::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+    border: 1px solid rgb(255 255 255 / .08);
+  }
+  .ftag {
+    display: inline-flex; align-items: center; gap: 6px; align-self: start;
+    padding: 6px 12px; border-radius: 999px; background: var(--amber); color: #3b2500;
+    font-family: var(--mono); font-size: 11.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+  }
+  .fmain { display: flex; flex-direction: column; gap: 0; }
+  .feat h3 { margin: 18px 0 10px; font-size: clamp(26px, 3vw, 34px); line-height: 1.1; letter-spacing: -.02em; font-weight: 800; color: white; }
+  .feat .lead { margin: 0; font-size: 16.5px; color: #c4d0ea; max-width: 54ch; }
+
+  .tiles { list-style: none; padding: 0; margin: 24px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tile {
+    display: flex; gap: 12px; align-items: flex-start; padding: 14px; border-radius: 14px;
+    background: rgb(255 255 255 / .05); border: 1px solid rgb(255 255 255 / .1);
+    transition: background .15s, border-color .15s;
+  }
+  .tile:hover { background: rgb(255 255 255 / .08); border-color: rgb(255 255 255 / .18); }
+  .tile .ck {
+    flex: none; width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center;
+    background: rgb(52 211 153 / .15); color: var(--green); margin-top: 1px;
+  }
+  .tile .ck svg { width: 14px; height: 14px; }
+  .tile b { display: block; font-size: 15px; font-weight: 700; color: white; line-height: 1.3; }
+  .tile span { display: block; font-size: 13px; color: #9fb0d4; margin-top: 2px; }
+  @media (max-width: 429px) { .tiles { grid-template-columns: 1fr; } }
+
+  .factions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 22px;
+    border-radius: 12px; font-weight: 700; font-size: 15.5px; cursor: pointer; border: 1px solid transparent;
+    transition: transform .15s, box-shadow .15s, background .15s;
+  }
+  .btn svg { width: 18px; height: 18px; }
+  .btn.light { background: white; color: var(--ink); box-shadow: 0 10px 24px -10px rgb(0 0 0 / .6); }
+  .btn.light:hover { transform: translateY(-1px); background: #f0f6ff; }
+  @media (max-width: 639px) { .factions .btn { width: 100%; } }
+
+  /* Sample view */
+  .sample {
+    display: flex; flex-direction: column; border-radius: 16px; padding: 18px;
+    background: rgb(3 10 30 / .45); border: 1px solid rgb(255 255 255 / .1); backdrop-filter: blur(2px);
+  }
+  .shd { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .shd b { color: white; font-size: 15px; font-weight: 700; }
+  .pill {
+    font-family: var(--mono); font-size: 11.5px; font-weight: 600; color: #bfe3ff; letter-spacing: .06em;
+    padding: 4px 10px; border-radius: 999px; border: 1px solid rgb(191 227 255 / .3); background: rgb(14 165 233 / .12);
+    white-space: nowrap;
+  }
+  .srow { display: grid; grid-template-columns: 1fr auto; gap: 12px; margin-top: 14px; flex: 1; }
+  .chart {
+    position: relative; border-radius: 12px; background: rgb(255 255 255 / .03); border: 1px solid rgb(255 255 255 / .06);
+    min-height: 150px; overflow: hidden;
+  }
+  .chart svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .chart .grid line { stroke: rgb(255 255 255 / .06); }
+  .time {
+    display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+    padding: 14px 18px; border-radius: 12px; background: rgb(14 165 233 / .1); border: 1px solid rgb(14 165 233 / .25);
+    min-width: 120px;
+  }
+  .time b { font-size: 40px; line-height: 1; font-weight: 800; color: #38bdf8; letter-spacing: -.02em; }
+  .time span { margin-top: 8px; font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: #9fb0d4; }
+  @media (max-width: 479px) {
+    .srow { grid-template-columns: 1fr; }
+    .chart { min-height: 120px; }
+    .time { flex-direction: row; justify-content: flex-start; gap: 12px; padding: 12px 14px; }
+    .time b { font-size: 30px; }
+    .time span { margin: 0; text-align: left; }
+  }
+
+  /* ---------- Package cards ---------- */
+  .pkhead {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 40px 2px 14px;
+  }
+  .dots { display: flex; gap: 6px; }
+  .dots button {
+    width: 8px; height: 8px; padding: 0; border-radius: 999px; border: 0; background: var(--line-2); cursor: pointer;
+    transition: width .2s, background .2s;
+  }
+  .dots button[aria-current="true"] { width: 22px; background: var(--ink); }
+  .dots { display: none; }
+
+  .cards {
+    list-style: none; padding: 0; margin: 0;
+    display: grid; gap: 16px; grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) { .cards { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1024px) { .cards { grid-template-columns: repeat(4, 1fr); } }
+
+  /* Phone: swipeable row with peek */
+  @media (max-width: 639px) {
+    .dots { display: flex; }
+    .cards {
+      grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 84%;
+      overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 16px;
+      margin: 0 -16px; padding: 4px 16px 16px; scrollbar-width: none;
+    }
+    .cards::-webkit-scrollbar { display: none; }
+    .cards > li { scroll-snap-align: start; }
+  }
+
+  .card {
+    --c: var(--t0);
+    position: relative; height: 100%; display: flex; flex-direction: column;
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 22px 20px 18px; box-shadow: var(--shadow);
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+  }
+  .card::before {
+    content: ""; position: absolute; left: 20px; right: 20px; top: -1px; height: 3px; border-radius: 0 0 3px 3px; background: var(--c);
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: color-mix(in srgb, var(--c) 35%, white); }
+  .card[data-tone="1"] { --c: var(--t1); }
+  .card[data-tone="2"] { --c: var(--t2); }
+  .card[data-tone="3"] { --c: var(--t3); }
+
+  .cpill {
+    align-self: start; display: inline-flex; align-items: center; gap: 7px;
+    font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--c); padding: 4px 10px; border-radius: 999px;
+    background: color-mix(in srgb, var(--c) 9%, white); border: 1px solid color-mix(in srgb, var(--c) 25%, white);
+  }
+  .cpill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
+  .card h3 { margin: 16px 0 6px; font-size: 20px; line-height: 1.2; font-weight: 800; letter-spacing: -.01em; }
+  .card p { margin: 0; font-size: 15px; color: var(--ink-3); line-height: 1.5; }
+  .ctags { list-style: none; padding: 0; margin: 16px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .ctags li {
+    font-size: 13px; font-weight: 600; color: var(--ink-2); padding: 4px 10px; border-radius: 8px;
+    background: var(--surface-2); border: 1px solid var(--line);
+  }
+  .cfoot { margin-top: auto; padding-top: 18px; }
+  .go {
+    display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 44px;
+    margin-top: 0; padding: 0 14px; border-radius: 10px; cursor: pointer;
+    background: transparent; border: 1px solid var(--line-2); font-weight: 700; font-size: 15px; color: var(--ink);
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .go .arr { transition: transform .15s; }
+  .card:hover .go, .go:hover { border-color: var(--c); color: var(--c); }
+  .go:hover .arr { transform: translateX(3px); }
+  .card[data-variant="enterprise"] .go { background: var(--ink); color: white; border-color: var(--ink); }
+  .card[data-variant="enterprise"] .go:hover { background: #172a5e; color: white; }
+  .spacer { height: 18px; }
+
+  /* ---------- Toast ---------- */
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0;
+    background: var(--ink); color: white; padding: 12px 16px; border-radius: 12px; font-size: 14px;
+    box-shadow: var(--shadow-lg); transition: opacity .2s, transform .2s; pointer-events: none;
+    max-width: calc(100vw - 32px); z-index: 10;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .toast code { font-family: var(--mono); font-size: 12.5px; background: rgb(255 255 255 / .12); padding: 1px 5px; border-radius: 4px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="mockbar">
+  <span>Mockup · Productized services · live content only, nothing added or removed</span>
+  <label class="switch">
+    <input type="checkbox" id="pricingToggle" checked>
+    <span class="track" aria-hidden="true"></span>
+    <span>Pricing buttons (<code>data-pricing-hidden</code>)</span>
+  </label>
+</div>
+
+<section class="section" id="programmes" aria-labelledby="programmes-title">
+  <div class="wrap">
+    <header class="shead">
+      <span class="eyebrow">Productized services</span>
+      <h2 id="programmes-title">Make every service feel buyable.</h2>
+      <p>Lead with recognizable programmes, then open the depth. The catalogue stays deep — the homepage presents it as a clear set of outcomes.</p>
+    </header>
+
+    <!-- Featured programme -->
+    <article class="feat" aria-labelledby="soc-title">
+      <div class="fmain">
+        <span class="ftag">★ Recommended launch path</span>
+        <h3 id="soc-title">Managed SOC Launch</h3>
+        <p class="lead">24×7 Wazuh-powered SOC with onboarding, telemetry, endpoint coverage, cloud logs, threat intelligence and monthly reporting.</p>
+        <ul class="tiles">
+          <li class="tile"><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><div><b>Wazuh onboarding</b><span>Telemetry + tuning</span></div></li>
+          <li class="tile"><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><div><b>24×7 SOC</b><span>Alert triage</span></div></li>
+          <li class="tile"><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><div><b>Endpoint coverage</b><span>Agent visibility</span></div></li>
+          <li class="tile"><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><div><b>Monthly report</b><span>Board-ready proof</span></div></li>
+        </ul>
+        <div class="factions" data-pricing-hidden>
+          <button type="button" class="btn light" data-action="calc">
+            Open SOC calculator
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="sample" role="group" aria-label="Sample SOC launch view">
+        <div class="shd"><b>Sample SOC launch view</b><span class="pill">9 controls</span></div>
+        <div class="srow">
+          <div class="chart" aria-hidden="true">
+            <svg viewBox="0 0 300 150" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#34d399" stop-opacity=".45"/>
+                  <stop offset="1" stop-color="#34d399" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <g class="grid"><line x1="0" y1="37.5" x2="300" y2="37.5"/><line x1="0" y1="75" x2="300" y2="75"/><line x1="0" y1="112.5" x2="300" y2="112.5"/></g>
+              <path d="M0 128 L50 124 L100 112 L150 92 L200 66 L250 58 L300 54 L300 150 L0 150 Z" fill="url(#g)"/>
+              <path d="M0 128 L50 124 L100 112 L150 92 L200 66 L250 58 L300 54" fill="none" stroke="#34d399" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="time"><b>4w</b><span>Indicative timeline</span></div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Packages -->
+    <div class="pkhead">
+      <span class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Programmes</span>
+      <div class="dots" id="dots" role="group" aria-label="Choose programme card"></div>
+    </div>
+
+    <ul class="cards" id="cards">
+      <li>
+        <article class="card" data-tone="0" aria-labelledby="pk1">
+          <span class="cpill">Entry</span>
+          <h3 id="pk1">Exposure Check</h3>
+          <p>Quick proof-of-risk for leaders who need a fast board-ready view.</p>
+          <ul class="ctags"><li>External attack surface</li><li>Web/API pentest</li><li>Dark web</li></ul>
+          <div class="cfoot" data-pricing-hidden>
+            <button type="button" class="go" data-action="order" data-id="exposure" aria-label="View scope: Exposure Check">View scope <span class="arr" aria-hidden="true">→</span></button>
+          </div>
+        </article>
+      </li>
+      <li>
+        <article class="card" data-tone="1" aria-labelledby="pk2">
+          <span class="cpill">Foundation</span>
+          <h3 id="pk2">Secure Foundation</h3>
+          <p>Baseline hardening across code, endpoint, identity, network and people.</p>
+          <ul class="ctags"><li>DevSecOps</li><li>AD baseline</li><li>Segmentation</li></ul>
+          <div class="cfoot" data-pricing-hidden>
+            <button type="button" class="go" data-action="order" data-id="foundation" aria-label="View scope: Secure Foundation">View scope <span class="arr" aria-hidden="true">→</span></button>
+          </div>
+        </article>
+      </li>
+      <li>
+        <article class="card" data-tone="2" aria-labelledby="pk3">
+          <span class="cpill">Audit-ready</span>
+          <h3 id="pk3">Compliance Sprint</h3>
+          <p>Readiness and evidence support for SOC 2, ISO and PCI-driven buyers.</p>
+          <ul class="ctags"><li>SOC 2</li><li>ISO</li><li>Policy pack</li></ul>
+          <div class="cfoot" data-pricing-hidden>
+            <button type="button" class="go" data-action="order" data-id="compliance" aria-label="View scope: Compliance Sprint">View scope <span class="arr" aria-hidden="true">→</span></button>
+          </div>
+        </article>
+      </li>
+      <li>
+        <article class="card" data-tone="3" data-variant="enterprise" aria-labelledby="pk4">
+          <span class="cpill">Full stack</span>
+          <h3 id="pk4">Enterprise Shield</h3>
+          <p>Co-managed security programme across all CyberStation practices.</p>
+          <ul class="ctags"><li>All domains</li><li>SOC + IR</li><li>GRC + data</li></ul>
+          <div class="cfoot">
+            <button type="button" class="go" data-action="call" data-id="enterprise" aria-label="Talk to sales: Enterprise Shield">Talk to sales <span class="arr" aria-hidden="true">→</span></button>
+          </div>
+        </article>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  /* Pricing toggle mirrors the live site's data-pricing-hidden behaviour */
+  const toggle = document.getElementById('pricingToggle');
+  const apply = () => document.body.classList.toggle('pricing-off', !toggle.checked);
+  toggle.addEventListener('change', apply); apply();
+
+  /* Button actions map to the live site's existing handlers */
+  const toast = document.getElementById('toast');
+  let tt;
+  const say = html => { toast.innerHTML = html; toast.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => toast.classList.remove('show'), 2600); };
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-action]');
+    if (!b) return;
+    const a = b.dataset.action, id = b.dataset.id;
+    if (a === 'calc') say('Live handler: <code>applyPackage(\'soc\', true); route(\'calc\')</code>');
+    if (a === 'order') say(`Live handler: <code>startOrder('${id}')</code>`);
+    if (a === 'call') say(`Live handler: <code>startCall('${id}')</code>`);
+  });
+
+  /* Phone carousel dots */
+  const cards = document.getElementById('cards');
+  const items = [...cards.children];
+  const dots = document.getElementById('dots');
+  dots.innerHTML = items.map((li, i) =>
+    `<button type="button" aria-label="Show ${li.querySelector('h3').textContent}" ${i === 0 ? 'aria-current="true"' : ''}></button>`).join('');
+  const dotBtns = [...dots.children];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  dotBtns.forEach((d, i) => d.addEventListener('click', () =>
+    cards.scrollTo({ left: items[i].offsetLeft - cards.offsetLeft - 16, behavior: reduce ? 'auto' : 'smooth' })));
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (en.isIntersecting && en.intersectionRatio > .6) {
+        const i = items.indexOf(en.target);
+        dotBtns.forEach((d, j) => j === i ? d.setAttribute('aria-current', 'true') : d.removeAttribute('aria-current'));
+      }
+    });
+  }, { root: cards, threshold: [.6] });
+  items.forEach(li => io.observe(li));
+})();
+</script>
+</body>
+</html>
